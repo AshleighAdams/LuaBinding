@@ -1,0 +1,34 @@
+<ExtensionModel>
+
+	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
+		<ProjectTemplate id = "LuaConsoleProject" resource = "LuaConsoleProject.xpt.xml"/>
+	</Extension>
+	<Extension path = "/MonoDevelop/Ide/FileFilters">
+		<FileFilter id = "Lua Files" _label = "Lua Files" extensions = "*.lua"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build">
+		<Condition id="ActiveLanguage" value = "Lua">
+			<Section id = "LuaCompilerParametersPanel" _label = "Compiler" class = "LuaBinding.CompilerParametersPanel"/>
+		</Condition>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
+		<LanguageBinding id = "Lua" supportedextensions = ".lua" class = "LuaBinding.LuaLanguageBinding"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
+		<ProjectBinding id = "LuaProject" class = "LuaBinding.LuaProjectBinding" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
+		<DataType class = "LuaBinding.LuaCompilerParameters" />
+		<DataType class = "LuaBinding.LuaProject" />
+		<DataType class = "LuaBinding.LuaConfigurationProject" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
+		<DotNetProject  language="Lua" extension="luaproj" guid="{bf51a8ef-4e44-4a82-8ba3-cc09ab0476cf}"/>
+	</Extension>
+	
+</ExtensionModel>

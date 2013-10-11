@@ -1,0 +1,7 @@
+/home/kobra/Desktop/LuaBinding/obj/Debug/ILAsmBinding.gtk-gui.gui.stetic
+/home/kobra/Desktop/LuaBinding/build/LuaBinding.dll.mdb
+/home/kobra/Desktop/LuaBinding/build/LuaBinding.dll
+/home/kobra/Desktop/LuaBinding/obj/Debug/LuaBinding.dll
+/home/kobra/Desktop/LuaBinding/obj/Debug/LuaBinding.dll.mdb
+/home/kobra/Desktop/LuaBinding/obj/Debug/ILAsmBinding.LuaBinding.addin.xml
+/home/kobra/Desktop/LuaBinding/obj/Debug/ILAsmBinding.LuaConsoleProject.xpt.xml

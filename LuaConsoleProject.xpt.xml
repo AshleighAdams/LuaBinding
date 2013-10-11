@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<Template originator   = "Kate Adams"
+          created      = "11/10/2013"
+          lastModified = "11/10/2013">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Console Project</_Name>
+		<_Category>Lua</_Category>
+		<Icon>md-project</Icon>
+		<LanguageName>Lua</LanguageName>
+		<_Description>Lua Console Project</_Description>
+		<DefaultFilename>LuaConsoleProject</DefaultFilename>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "main.lua"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = "." type = "Lua">
+			<Options
+				PauseConsoleOutput = "True"
+				MainFile = "main.lua"/>
+			<Files>
+				<File name="main.lua">
+<![CDATA[#!/usr/bin/env lua
+
+print("Hello, world")
+]]>
+				</File>
+			</Files>
+		</Project>
+	</Combine>
+</Template>
