@@ -55,7 +55,7 @@ namespace LuaBinding
 //			LuaCompilerParameters compilerParameters = (LuaCompilerParameters)configuration.CompilationParameters ?? new LuaCompilerParameters ();
 			
 			StringBuilder sb = new StringBuilder ();
-			sb.Append("-v ");
+			sb.Append("-p ");
 			
 			List<string> gacRoots = new List<string> ();
 
@@ -105,7 +105,7 @@ namespace LuaBinding
 			LoggingService.LogInfo ("luac " + sb.ToString ());
 			
 			var envVars = configuration.EnvironmentVariables;
-			int exitCode = DoCompilation(outstr, working_dir, envVars, gacRoots, ref output, ref error);
+			int exitCode = DoCompilation(outstr, working_dir, envVars, gacRoots, ref output, ref error, monitor);
 			
 			BuildResult result = ParseOutput(output, error);
 			if (result.CompilerOutput.Trim().Length != 0)
@@ -157,7 +157,7 @@ namespace LuaBinding
 			return result;
 		}
 		
-		static int DoCompilation (string outstr, string working_dir, Dictionary<string,string> env_vars, List<string> gac_roots, ref string output, ref string error) 
+		static int DoCompilation (string outstr, string working_dir, Dictionary<string,string> env_vars, List<string> gac_roots, ref string output, ref string error, IProgressMonitor monitor) 
 		{
 			output = Path.GetTempFileName();
 			error = Path.GetTempFileName();
@@ -165,7 +165,18 @@ namespace LuaBinding
 			StreamWriter outwr = new StreamWriter (output);
 			StreamWriter errwr = new StreamWriter (error);
 
-			ProcessStartInfo pinfo = new ProcessStartInfo("luac", outstr);
+			// the default should be valid, 
+			string luac = PropertyService.Get<string>( "Lua.DefaultInterpreterPath" );
+
+			if( string.IsNullOrEmpty( luac ) )
+			{
+				monitor.ReportError( "Can't find Lua compiler (please set the default interpreter path)", new Exception() );
+				return 1;
+			}
+
+			luac += "c";
+
+			ProcessStartInfo pinfo = new ProcessStartInfo(luac, outstr);
 			pinfo.WorkingDirectory = working_dir;
 			
 			if (gac_roots.Count > 0) 

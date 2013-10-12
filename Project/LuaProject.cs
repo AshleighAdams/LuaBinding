@@ -54,6 +54,11 @@ namespace LuaBinding
 		{
 			return new LuaConfiguration( name );
 		}
+		
+		public override bool IsCompileable(string file_name)
+		{
+			return file_name.ToLower().EndsWith( ".lua" );
+		}
 
 		protected override bool OnGetCanExecute( ExecutionContext context, ConfigurationSelector configuration )
 		{

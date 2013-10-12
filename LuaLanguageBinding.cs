@@ -49,7 +49,8 @@ namespace LuaBinding
 		
 		public bool IsSourceCodeFile (FilePath file_name)
 		{
-			return string.Compare (Path.GetExtension (file_name), ".lua", true) == 0;
+			return file_name.ToString().ToLower().EndsWith( ".lua" );
+			//return string.Compare (Path.GetExtension (file_name), ".lua", true) == 0;
 		}
 
 		public string SingleLineCommentTag { get { return "--"; } }
