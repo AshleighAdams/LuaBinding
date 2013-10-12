@@ -7,15 +7,10 @@
 		<Url>https://github.com/c0bra61/LuaBinding</Url>
 		<Category>Language bindings</Category>
 	</Header>
-	<Project platforms="Mac Linux">
+	<Project platforms="Mac Linux Win32">
 		<AddinFile>build/LuaBinding.dll</AddinFile>
 		<BuildFile>LuaBinding.sln</BuildFile>
 		<BuildConfiguration>Debug</BuildConfiguration>
-	</Project>
-	<Project platforms="Win32">
-		<AddinFile>build/LuaBinding.dll</AddinFile>
-		<BuildFile>LuaBinding.sln</BuildFile>
-		<BuildConfiguration>DebugWin32</BuildConfiguration>
 	</Project>
 </AddinProject>
 	
