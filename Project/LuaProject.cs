@@ -62,6 +62,7 @@ namespace LuaBinding
 
 		protected override bool OnGetCanExecute( ExecutionContext context, ConfigurationSelector configuration )
 		{
+			// TODO: Check interpreter paths from here...
 			return true;
 		}
 
