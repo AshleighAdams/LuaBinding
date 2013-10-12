@@ -1,11 +1,11 @@
 <Addin 	id			= "LuaBinding"
-		namespace	= "MonoDevelop"
+		namespace	= "LuaBinding"
 		name		= "Lua Language Binding"
 		author		= "Kate Adams"
 		url			= "https://github.com/c0bra61/LuaBinding"
 		description	= "Lua Language Binding"
 		category	= "Language bindings"
-		version		= "4.0.5">
+		version		= "1.0.1">
 	
 	<Runtime>
 		<Import assembly = "LuaBinding.dll" />
