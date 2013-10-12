@@ -74,10 +74,21 @@ namespace LuaBinding
 
 			try
 			{
+				string param = string.Format("\"{0}\" {1}", config.MainFile, config.CommandLineParameters);
+
+				IProcessAsyncOperation op = 
+				    Runtime.ProcessService.StartConsoleProcess(GetLuaPath( config.LangVersion ),
+				                                               param, BaseDirectory,
+					                                           config.EnvironmentVariables, console, null);
+
+				aggregatedMonitor.AddOperation( op );
+				op.WaitForCompleted();
+				monitor.Log.WriteLine( "The application exited with code: " + op.ExitCode );
+				/*
 				var executionCommand = //CreateExecutionCommand( configuration, config );
 					new NativeExecutionCommand( GetLuaPath( config.LangVersion ), 
-					                       		config.CommandLineParameters, 
-					                       		BaseDirectory );
+					                           config.CommandLineParameters, 
+					                           BaseDirectory );
 
 
 				if( !context.ExecutionHandler.CanExecute( executionCommand ) )
@@ -92,13 +103,11 @@ namespace LuaBinding
 				asyncOp.WaitForCompleted();
 
 				monitor.Log.WriteLine( "The application exited with code: " + asyncOp.ExitCode );
+				*/
 			}
 			catch( Exception exc )
 			{
 				monitor.ReportError( GettextCatalog.GetString( "Cannot execute \"{0}\"", config.MainFile ), exc );
-				MonoDevelop.Ide.MessageService.ShowException( exc );
-				MonoDevelop.Ide.MessageService.ShowMessage( context.ExecutionHandler.ToString() );
-
 			}
 			finally
 			{
@@ -132,11 +141,10 @@ namespace LuaBinding
 				return false;
 			}
 
-			if( !IsFileInProject( config.MainFile ) )
+			if( !File.Exists(BaseDirectory + "/" + config.MainFile) )
 			{
-				//MonoDevelop.Ide.MessageService.ShowError( "Main file is missing", string.Format("The file `{0}` .luaect!", config.MainFile) );
-				MonoDevelop.Ide.MessageService.ShowWarning( "Main file is missing", string.Format("The file `{0}` .luaect!", config.MainFile) );
-				//return false;
+				MessageService.ShowError( "Main file is missing", string.Format("The file `{0}` does not exist!", config.MainFile) );
+				return false;
 			}
 
 			return true;
