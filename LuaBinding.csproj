@@ -89,6 +89,9 @@
     <EmbeddedResource Include="EmptyLuaFile.xft.xml">
       <LogicalName>EmptyLuaFile.xft.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="EmptyLuaModule.xft.xml">
+      <LogicalName>EmptyLuaModule.xft.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
