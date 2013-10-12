@@ -1,11 +1,14 @@
 using System;
 using System.IO;
 using System.Xml;
+using System.Diagnostics;
+
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
+
 
 namespace LuaBinding
 {
@@ -65,13 +68,18 @@ namespace LuaBinding
 			var config = (LuaConfiguration)GetConfiguration( configuration );
 			IConsole console = config.ExternalConsole ?
 				context.ExternalConsoleFactory.CreateConsole( !config.PauseConsoleOutput ) :
-					context.ConsoleFactory.CreateConsole( !config.PauseConsoleOutput );
+				context.ConsoleFactory.CreateConsole( !config.PauseConsoleOutput );
 
 			var aggregatedMonitor = new AggregatedOperationMonitor( monitor );
 
 			try
 			{
-				var executionCommand = CreateExecutionCommand( configuration, config );
+				var executionCommand = //CreateExecutionCommand( configuration, config );
+					new NativeExecutionCommand( GetLuaPath( config.LangVersion ), 
+					                       		config.CommandLineParameters, 
+					                       		BaseDirectory );
+
+
 				if( !context.ExecutionHandler.CanExecute( executionCommand ) )
 				{
 					monitor.ReportError( GettextCatalog.GetString( "Cannot execute application. The selected execution mode " +
@@ -79,16 +87,18 @@ namespace LuaBinding
 					return;
 				}
 
-				var asyncOp = context.ExecutionHandler.Execute( executionCommand, console );
+				IProcessAsyncOperation asyncOp = context.ExecutionHandler.Execute( executionCommand, console );
 				aggregatedMonitor.AddOperation( asyncOp );
 				asyncOp.WaitForCompleted();
 
 				monitor.Log.WriteLine( "The application exited with code: " + asyncOp.ExitCode );
-
 			}
 			catch( Exception exc )
 			{
 				monitor.ReportError( GettextCatalog.GetString( "Cannot execute \"{0}\"", config.MainFile ), exc );
+				MonoDevelop.Ide.MessageService.ShowException( exc );
+				MonoDevelop.Ide.MessageService.ShowMessage( context.ExecutionHandler.ToString() );
+
 			}
 			finally
 			{
@@ -110,28 +120,7 @@ namespace LuaBinding
 			var config = (LuaConfiguration)GetConfiguration( configuration );
 
 			{ // check that the interpreter is set
-				FilePath lua = (FilePath)PropertyService.Get<string>( "Lua.DefaultInterpreterPath" );
-				FilePath lua51 = (FilePath)PropertyService.Get<string>( "Lua.51InterpreterPath" );
-				FilePath lua52 = (FilePath)PropertyService.Get<string>( "Lua.52InterpreterPath" );
-				FilePath luajit = (FilePath)PropertyService.Get<string>( "Lua.JITInterpreterPath" );
-
-				FilePath LuaPath;
-
-				switch( config.LangVersion )
-				{
-				case LangVersion.Lua:
-					LuaPath = lua;
-					break;
-				case LangVersion.Lua51:
-					LuaPath = lua51;
-					break;
-				case LangVersion.Lua52:
-					LuaPath = lua52;
-					break;
-				case LangVersion.LuaJIT:
-					LuaPath = luajit;
-					break;
-				}
+				FilePath LuaPath = GetLuaPath( config.LangVersion );
 
 				if( string.IsNullOrWhiteSpace( LuaPath ) )
 					return false;
@@ -153,34 +142,29 @@ namespace LuaBinding
 			return true;
 		}
 
+		static FilePath GetLuaPath(LangVersion ver)
+		{
+			switch( ver )
+			{
+			case LangVersion.Lua:
+				return (FilePath)PropertyService.Get<string>( "Lua.DefaultInterpreterPath" );
+			case LangVersion.Lua51:
+				return (FilePath)PropertyService.Get<string>( "Lua.51InterpreterPath" );
+			case LangVersion.Lua52:
+				return (FilePath)PropertyService.Get<string>( "Lua.52InterpreterPath" );
+			case LangVersion.LuaJIT:
+				return (FilePath)PropertyService.Get<string>( "Lua.JITInterpreterPath" );
+			}
+
+			return null;
+		}
+
 		protected virtual LuaExecutionCommand CreateExecutionCommand( ConfigurationSelector config_sel, LuaConfiguration configuration )
 		{
 			LangVersion vers = configuration.LangVersion;
+			FilePath LuaPath = GetLuaPath( vers );
 
-			FilePath lua = (FilePath)PropertyService.Get<string>( "Lua.DefaultInterpreterPath" );
-			FilePath lua51 = (FilePath)PropertyService.Get<string>( "Lua.51InterpreterPath" );
-			FilePath lua52 = (FilePath)PropertyService.Get<string>( "Lua.52InterpreterPath" );
-			FilePath luajit = (FilePath)PropertyService.Get<string>( "Lua.JITInterpreterPath" );
-
-			FilePath LuaPath;
-
-			switch( vers )
-			{
-			case LangVersion.Lua:
-				LuaPath = lua;
-				break;
-			case LangVersion.Lua51:
-				LuaPath = lua51;
-				break;
-			case LangVersion.Lua52:
-				LuaPath = lua52;
-				break;
-			case LangVersion.LuaJIT:
-				LuaPath = luajit;
-				break;
-			}
-			
-			string arguments = configuration.MainFile + " " + configuration.InterpreterArguments;
+			string arguments = "\"" + configuration.MainFile + "\" " + configuration.CommandLineParameters;
 			
 			var command = new LuaExecutionCommand( LuaPath ) {
 				Arguments = arguments,

@@ -5,7 +5,7 @@ using MonoDevelop.Core.Execution;
 
 namespace LuaBinding
 {
-	public class LuaExecutionCommand : DotNetExecutionCommand
+	public class LuaExecutionCommand : NativeExecutionCommand
 	{
 		public LuaExecutionCommand (string command) : base (command)
 		{
