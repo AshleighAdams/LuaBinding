@@ -1,0 +1,21 @@
+<AddinProject appVersion="2.4">
+	<Header>
+		<Name>Lua binding</Name>
+		<Name locale="en-GB">Bindings for Lua</Name>
+		<Description>Provides support for the Git version control system</Description>
+		<Author>Kate Adams</Author>
+		<Url>https://github.com/c0bra61/LuaBinding</Url>
+		<Category>Language bindings</Category>
+	</Header>
+	<Project platforms="Mac Linux">
+		<AddinFile>build/LuaBinding.dll</AddinFile>
+		<BuildFile>LuaBinding.sln</BuildFile>
+		<BuildConfiguration>Debug</BuildConfiguration>
+	</Project>
+	<Project platforms="Win32">
+		<AddinFile>build/LuaBinding.dll</AddinFile>
+		<BuildFile>LuaBinding.sln</BuildFile>
+		<BuildConfiguration>DebugWin32</BuildConfiguration>
+	</Project>
+</AddinProject>
+	
