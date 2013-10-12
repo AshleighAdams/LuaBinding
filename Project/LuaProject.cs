@@ -145,7 +145,7 @@ namespace LuaBinding
 
 			if( !IsFileInProject( config.MainFile ) )
 			{
-				MonoDevelop.Ide.MessageService.ShowError( "Main file is missing", "Main file file is missing." );
+				MonoDevelop.Ide.MessageService.ShowError( "Main file is missing", string.Format("The file `{0}` is not in the project!", config.MainFile) );
 				return false;
 			}
 
