@@ -1,4 +1,4 @@
-<AddinProject appVersion="2.4">
+<AddinProject appVersion="4.0">
 	<Header>
 		<Name>Lua binding</Name>
 		<Name locale="en-GB">Bindings for Lua</Name>
