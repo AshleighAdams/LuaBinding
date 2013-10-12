@@ -1,4 +1,4 @@
-
+/*
 using System;
 using Mono.Addins;
 using Mono.Addins.Description;
@@ -13,3 +13,4 @@ using Mono.Addins.Description;
 
 [assembly:AddinDependency ("Core", "4.0.5")]
 [assembly:AddinDependency ("Ide", "4.0.5")]
+*/

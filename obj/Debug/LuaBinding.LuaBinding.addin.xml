@@ -1,4 +1,17 @@
-<ExtensionModel>
+<Addin 	id			= "LuaBinding"
+		namespace	= "LuaBinding"
+		name		= "Lua Language Binding"
+		author		= "Kate Adams"
+		url			= "https://github.com/c0bra61/LuaBinding"
+		description	= "Lua Language Binding"
+		category	= "Language bindings"
+		version		= "4.0.5">
+	
+	<Dependencies>
+		<Addin id = "Core" version = "2.8.2" />
+		<Addin id = "Ide" version = "2.8.2" />	
+	</Dependencies>
+	
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id = "LuaConsoleProject" resource = "LuaConsoleProject.xpt.xml"/>
@@ -46,4 +59,4 @@
 		<DotNetProject  language="Lua" extension="luaproj" guid="{bf51a8ef-4e44-4a82-8ba3-cc09ab0476cf}"/>
 	</Extension>
 	
-</ExtensionModel>
+</Addin>

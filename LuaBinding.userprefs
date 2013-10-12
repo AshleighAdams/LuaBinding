@@ -1,23 +1,23 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Gui/InterpreterOptions.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="LuaBinding.addin.xml">
     <Files>
-      <File FileName="LuaLanguageBinding.cs" Line="62" Column="39" />
-      <File FileName="LuaCompilerManager.cs" Line="39" Column="21" />
-      <File FileName="LuaConsoleProject.xpt.xml" Line="34" Column="1" />
-      <File FileName="Project/LuaProjectBinding.cs" Line="26" Column="45" />
-      <File FileName="Project/LuaProject.cs" Line="39" Column="50" />
-      <File FileName="Project/LuaConfiguration.cs" Line="48" Column="3" />
-      <File FileName="Project/LuaExectionCommand.cs" Line="16" Column="8" />
-      <File FileName="Project/LuaCompilerParameters.cs" Line="15" Column="4" />
-      <File FileName="LuaBinding.addin.xml" Line="23" Column="25" />
-      <File FileName="Gui/CompilerParametersPanelWidget.cs" Line="50" Column="19" />
-      <File FileName="Gui/InterpreterOptions.cs" Line="3" Column="14" />
+      <File FileName="LuaBinding.addin.xml" Line="11" Column="40" />
+      <File FileName="EmptyLuaModule.xft.xml" Line="1" Column="1" />
+      <File FileName="EmptyLuaFile.xft.xml" Line="1" Column="1" />
+      <File FileName="LuaCompilerManager.cs" Line="1" Column="1" />
+      <File FileName="LuaLanguageBinding.cs" Line="1" Column="1" />
+      <File FileName="Project/LuaProject.cs" Line="1" Column="1" />
+      <File FileName="Project/LuaExectionCommand.cs" Line="1" Column="1" />
+      <File FileName="LuaConsoleProject.xpt.xml" Line="1" Column="1" />
+      <File FileName="addin-project.xml" Line="21" Column="2" />
+      <File FileName="AddinInfo.cs" Line="16" Column="3" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
-          <Node name="LuaBinding" expanded="True" selected="True">
+          <Node name="LuaBinding" expanded="True">
+            <Node name="References" expanded="True" />
             <Node name="UserInterface" expanded="True" />
             <Node name="Gui" expanded="True" />
             <Node name="Project" expanded="True" />

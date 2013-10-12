@@ -71,11 +71,6 @@
       <Package>monodevelop</Package>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Mono.Addins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
-      <Private>False</Private>
-      <Package>mono-addins</Package>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
