@@ -50,11 +50,10 @@ namespace LuaBinding
 
 		
 
-		public static BuildResult Compile (ProjectItemCollection project_items, DotNetProjectConfiguration configuration, ConfigurationSelector config_selector, IProgressMonitor monitor)
+		public static BuildResult Compile (ProjectItemCollection project_items, LuaConfiguration configuration, ConfigurationSelector config_selector, IProgressMonitor monitor)
 		{
 //			LuaCompilerParameters compilerParameters = (LuaCompilerParameters)configuration.CompilationParameters ?? new LuaCompilerParameters ();
-			string output_name       = configuration.CompiledOutputName;
-
+			
 			StringBuilder sb = new StringBuilder ();
 			sb.Append("-v ");
 			
@@ -105,7 +104,7 @@ namespace LuaBinding
 
 			LoggingService.LogInfo ("luac " + sb.ToString ());
 			
-			var envVars = configuration.TargetRuntime.GetToolsExecutionEnvironment(configuration.TargetFramework);
+			var envVars = configuration.EnvironmentVariables;
 			int exitCode = DoCompilation(outstr, working_dir, envVars, gacRoots, ref output, ref error);
 			
 			BuildResult result = ParseOutput(output, error);
@@ -158,7 +157,7 @@ namespace LuaBinding
 			return result;
 		}
 		
-		static int DoCompilation (string outstr, string working_dir, ExecutionEnvironment env_vars, List<string> gac_roots, ref string output, ref string error) 
+		static int DoCompilation (string outstr, string working_dir, Dictionary<string,string> env_vars, List<string> gac_roots, ref string output, ref string error) 
 		{
 			output = Path.GetTempFileName();
 			error = Path.GetTempFileName();
@@ -178,9 +177,10 @@ namespace LuaBinding
 					gacPrefix += Path.PathSeparator + oldGacVar;
 				pinfo.EnvironmentVariables ["MONO_GAC_PREFIX"] = gacPrefix;
 			}
-			
-			env_vars.MergeTo(pinfo);
-			
+
+			foreach( KeyValuePair<string, string> kv in env_vars )
+				pinfo.EnvironmentVariables.Add( kv.Key, kv.Value );
+
 			pinfo.UseShellExecute = false;
 			pinfo.RedirectStandardOutput = true;
 			pinfo.RedirectStandardError = true;

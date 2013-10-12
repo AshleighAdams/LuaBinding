@@ -33,7 +33,7 @@ using MonoDevelop.Core;
 
 namespace LuaBinding
 {
-	class LuaLanguageBinding : IDotNetLanguageBinding
+	class LuaLanguageBinding : ILanguageBinding
 	{
 		public string Language {
 			get {
@@ -51,45 +51,15 @@ namespace LuaBinding
 		{
 			return string.Compare (Path.GetExtension (file_name), ".lua", true) == 0;
 		}
-		
-		public BuildResult Compile (ProjectItemCollection project_items, DotNetProjectConfiguration configuration, ConfigurationSelector config_selector, IProgressMonitor monitor)
-		{
-			return LuaCompilerManager.Compile (project_items, configuration, config_selector, monitor);
-		}
-		
-		public ConfigurationParameters CreateCompilationParameters (XmlElement project_options)
-		{
-			return new LuaCompilerParameters();
-		}
-	
-		public ProjectParameters CreateProjectParameters (XmlElement project_options)
-		{
-			return null;
-		}
-		
+
 		public string SingleLineCommentTag { get { return "--"; } }
 		public string BlockCommentStartTag { get { return "--[["; } }
 		public string BlockCommentEndTag { get { return "]]"; } }
-		
-		public System.CodeDom.Compiler.CodeDomProvider GetCodeDomProvider ()
-		{
-			return null;
-		}
-		
+			
 		public FilePath GetFileName (FilePath base_name)
 		{
 			return base_name + ".lua";
 		}
-		
-		public ClrVersion[] GetSupportedClrVersions ()
-		{
-			return new ClrVersion[] { 
-				ClrVersion.Net_1_1, 
-				ClrVersion.Net_2_0,
-				ClrVersion.Clr_2_1,
-				ClrVersion.Net_4_0,
-				ClrVersion.Net_4_5,
-			};
-		}
+
 	}
 }

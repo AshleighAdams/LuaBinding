@@ -60,6 +60,11 @@ namespace LuaBinding
 			return true;
 		}
 
+		protected override BuildResult DoBuild(IProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			return LuaCompilerManager.Compile(this.Items, this.DefaultConfiguration as LuaConfiguration, configuration, monitor);
+		}
+
 		protected override void DoExecute( IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration )
 		{
 			if( !CheckCanExecute( configuration ) )
