@@ -8,8 +8,12 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build">
-		<Condition id="ActiveLanguage" value = "Lua">
-			<Section id = "LuaCompilerParametersPanel" _label = "Compiler" class = "LuaBinding.CompilerParametersPanel"/>
+		<Condition id="ItemType" value="LuaBinding.LuaProject">
+			<Section 
+				id = "LuaCompilerParametersPanel"
+				_label = "Interpreter"
+				insertafter = "General"
+				class = "LuaBinding.CompilerParametersPanel"/>
 		</Condition>
 	</Extension>
 

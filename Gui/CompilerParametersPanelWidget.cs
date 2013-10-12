@@ -46,6 +46,8 @@ namespace LuaBinding
 			_VersionsStore.AppendValues( "Lua 5.2", LangVersion.Lua52 );
 			_VersionsStore.AppendValues( "LuaJIT", LangVersion.LuaJIT );
 			LanguageVersion.Model = _VersionsStore;
+
+			Visible = true;
 		}
 
 		public string DefaultFile {
