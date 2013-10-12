@@ -47,22 +47,22 @@ namespace LuaBinding
 			}
 		}
 		
-		public bool IsSourceCodeFile (FilePath fileName)
+		public bool IsSourceCodeFile (FilePath file_name)
 		{
-			return string.Compare (Path.GetExtension (fileName), ".lua", true) == 0;
+			return string.Compare (Path.GetExtension (file_name), ".lua", true) == 0;
 		}
 		
-		public BuildResult Compile (ProjectItemCollection projectItems, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, IProgressMonitor monitor)
+		public BuildResult Compile (ProjectItemCollection project_items, DotNetProjectConfiguration configuration, ConfigurationSelector config_selector, IProgressMonitor monitor)
 		{
-			return LuaCompilerManager.Compile (projectItems, configuration, configSelector, monitor);
+			return LuaCompilerManager.Compile (project_items, configuration, config_selector, monitor);
 		}
 		
-		public ConfigurationParameters CreateCompilationParameters (XmlElement projectOptions)
+		public ConfigurationParameters CreateCompilationParameters (XmlElement project_options)
 		{
 			return new LuaCompilerParameters();
 		}
 	
-		public ProjectParameters CreateProjectParameters (XmlElement projectOptions)
+		public ProjectParameters CreateProjectParameters (XmlElement project_options)
 		{
 			return null;
 		}
@@ -76,9 +76,9 @@ namespace LuaBinding
 			return null;
 		}
 		
-		public FilePath GetFileName (FilePath baseName)
+		public FilePath GetFileName (FilePath base_name)
 		{
-			return baseName + ".lua";
+			return base_name + ".lua";
 		}
 		
 		public ClrVersion[] GetSupportedClrVersions ()

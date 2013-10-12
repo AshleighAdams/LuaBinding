@@ -86,6 +86,9 @@
       <DeployService-Deploy>True</DeployService-Deploy>
       <LogicalName>LuaConsoleProject.xpt.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="EmptyLuaFile.xft.xml">
+      <LogicalName>EmptyLuaFile.xft.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />

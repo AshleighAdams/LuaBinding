@@ -25,7 +25,7 @@ namespace LuaBinding
 
 		public bool CanCreateSingleFileProject (string source_file)
 		{
-			return Path.GetExtension(source_file) == "py";
+			return Path.GetExtension(source_file) == "lua";
 		}
 	}
 }

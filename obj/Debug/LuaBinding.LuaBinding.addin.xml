@@ -27,6 +27,10 @@
 		<LanguageBinding id = "Lua" supportedextensions = ".lua" class = "LuaBinding.LuaLanguageBinding"/>
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Ide/FileTemplates">
+		<FileTemplate id = "EmptyLuaFile" resource = "EmptyLuaFile.xft.xml" />
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
 		<ProjectBinding id = "LuaProject" class = "LuaBinding.LuaProjectBinding" />
 	</Extension>
