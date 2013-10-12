@@ -64,12 +64,10 @@
     <Reference Include="MonoDevelop.Core, Version=2.6.0.0, Culture=neutral">
       <Package>monodevelop</Package>
       <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="MonoDevelop.Ide, Version=2.6.0.0, Culture=neutral">
       <Private>False</Private>
       <Package>monodevelop</Package>
-      <SpecificVersion>False</SpecificVersion>
     </Reference>
   </ItemGroup>
   <ItemGroup>
