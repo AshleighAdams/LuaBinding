@@ -69,6 +69,14 @@
       <Private>False</Private>
       <Package>monodevelop</Package>
     </Reference>
+    <Reference Include="MonoDevelop.SourceEditor2, Version=2.6.0.0, Culture=neutral">
+      <Private>False</Private>
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
+    <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral">
+      <Private>False</Private>
+      <Package>monodevelop</Package>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -88,6 +96,10 @@
     <EmbeddedResource Include="EmptyLuaModule.xft.xml">
       <LogicalName>EmptyLuaModule.xft.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Syntax\LuaSyntaxMode.xml">
+      <LogicalName>LuaSyntaxMode.xml</LogicalName>
+      <DeployService-Deploy>True</DeployService-Deploy>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -104,9 +116,13 @@
     <Compile Include="Project\LuaExectionCommand.cs" />
     <Compile Include="Gui\InterpreterOptions.cs" />
     <Compile Include="gtk-gui\LuaBinding.InterpreterOptions.cs" />
+    <Compile Include="Syntax\LyaSyntaxMode.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="addin-project.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Syntax\" />
   </ItemGroup>
 </Project>

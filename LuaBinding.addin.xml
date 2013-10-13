@@ -5,15 +5,17 @@
 		url			= "https://github.com/c0bra61/LuaBinding"
 		description	= "Lua Language Binding"
 		category	= "Language bindings"
-		version		= "1.0.2">
+		version		= "1.0.3">
 	
 	<Runtime>
 		<Import assembly = "LuaBinding.dll" />
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id = "::MonoDevelop.Ide" version = "4.0" />	
+		<Addin id = "::MonoDevelop.Ide" version = "4.0" />
 		<Addin id = "::MonoDevelop.Core" version = "4.0" />
+		<Addin id = "::MonoDevelop.SourceEditor2" version = "4.0" />
+		<!-- <Addin id = "::Mono.TextEditor" version = "1.0" /> -->
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
@@ -62,4 +64,18 @@
 		<DotNetProject  language="Lua" extension="luaproj" guid="{bf51a8ef-4e44-4a82-8ba3-cc09ab0476cf}"/>
 	</Extension>
 	
+	<!--- Syntax related -->
+	<Extension path = "/MonoDevelop/Core/MimeTypes">
+		<MimeType id="text/x-lua" _description="Lua files" isText="true">
+			<File pattern="*.lua" />
+		</MimeType>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/SourceEditor2/CustomModes">
+    	<SyntaxMode mimeTypes="text/x-lua" class="LuaBinding.LuaSyntaxMode"/>
+  	</Extension>
+	
+	<Extension path = "/MonoDevelop/SourceEditor2/SyntaxModes">
+		<Templates resource="LuaSyntaxMode.xml" />
+	</Extension>
 </Addin>

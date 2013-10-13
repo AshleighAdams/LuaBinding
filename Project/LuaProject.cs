@@ -92,6 +92,10 @@ namespace LuaBinding
 				                                               param, BaseDirectory,
 					                                           config.EnvironmentVariables, console, null);
 
+				monitor.CancelRequested += delegate {
+					op.Cancel();
+				};
+
 				aggregatedMonitor.AddOperation( op );
 				op.WaitForCompleted();
 				monitor.Log.WriteLine( "The application exited with code: " + op.ExitCode );
