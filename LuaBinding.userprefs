@@ -1,14 +1,10 @@
 ﻿<Properties GitUserInfo="UsingGIT">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Project/LuaProject.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Syntax/LuaSyntaxMode.xml">
     <Files>
-      <File FileName="LuaBinding.addin.xml" Line="8" Column="20" />
-      <File FileName="Project/LuaCompilerParameters.cs" Line="26" Column="1" />
-      <File FileName="Project/LuaProjectBinding.cs" Line="24" Column="4" />
-      <File FileName="Project/LuaProject.cs" Line="65" Column="49" />
-      <File FileName="LuaCompilerManager.cs" Line="177" Column="4" />
-      <File FileName="LuaLanguageBinding.cs" Line="53" Column="6" />
-      <File FileName="LuaConsoleProject.xpt.xml" Line="4" Column="29" />
+      <File FileName="Syntax/LuaSyntaxMode.xml" Line="111" Column="18" />
+      <File FileName="LuaBinding.addin.xml" Line="21" Column="56" />
+      <File FileName="Syntax/LyaSyntaxMode.cs" Line="11" Column="2" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -17,8 +13,9 @@
             <Node name="References" expanded="True" />
             <Node name="UserInterface" expanded="True" />
             <Node name="Gui" expanded="True" />
-            <Node name="Project" expanded="True">
-              <Node name="LuaProject.cs" selected="True" />
+            <Node name="Project" expanded="True" />
+            <Node name="Syntax" expanded="True">
+              <Node name="LuaSyntaxMode.xml" selected="True" />
             </Node>
           </Node>
         </State>

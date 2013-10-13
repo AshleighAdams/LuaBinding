@@ -5,7 +5,7 @@
 		url			= "https://github.com/c0bra61/LuaBinding"
 		description	= "Lua Language Binding"
 		category	= "Language bindings"
-		version		= "1.0.3">
+		version		= "1.0.4">
 	
 	<Runtime>
 		<Import assembly = "LuaBinding.dll" />
@@ -15,6 +15,7 @@
 		<Addin id = "::MonoDevelop.Ide" version = "4.0" />
 		<Addin id = "::MonoDevelop.Core" version = "4.0" />
 		<Addin id = "::MonoDevelop.SourceEditor2" version = "4.0" />
+		<!-- <Addin id = "::ICSharpCode.NRefactory" version = "5.0.0.0" /> -->
 		<!-- <Addin id = "::Mono.TextEditor" version = "1.0" /> -->
 	</Dependencies>
 	
@@ -77,5 +78,10 @@
 	
 	<Extension path = "/MonoDevelop/SourceEditor2/SyntaxModes">
 		<Templates resource="LuaSyntaxMode.xml" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+		<Class fileExtensions = ".lua" id = "LuaBinding.LuaTextEditorIndentation" class = "LuaBinding.LuaTextEditorIndentation" />
+		<Class fileExtensions = ".lua" id = "LuaBinding.LuaTextEditorCompletion" class = "LuaBinding.LuaTextEditorCompletion" />
 	</Extension>
 </Addin>
