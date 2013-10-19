@@ -9,7 +9,7 @@
 	
 	<Runtime>
 		<Import assembly = "LuaBinding.dll" />
-		<Import assembly = ":ICSharpCode.NRefactory"/>
+		<Import assembly = "ICSharpCode.NRefactory.dll"/>
 	</Runtime>
 	
 	<Dependencies>
