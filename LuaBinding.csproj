@@ -123,6 +123,7 @@
     <Compile Include="Syntax\LyaSyntaxMode.cs" />
     <Compile Include="Auto\LuaTextEditorIndentation.cs" />
     <Compile Include="Auto\LuaTextEditorCompletion.cs" />
+    <Compile Include="Auto\LuaParser.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
