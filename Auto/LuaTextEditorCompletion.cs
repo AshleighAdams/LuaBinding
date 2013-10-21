@@ -171,7 +171,7 @@ namespace LuaBinding
 		public override TooltipInformation CreateTooltipInformation(int overload, int currentParameter, bool smartWrap)
 		{
 			TooltipInformation info = new TooltipInformation();
-			info.AddCategory( "Parameter", string.Format("{0} {1}", FuncName, Overloads[overload]) );
+			info.AddCategory( "Parameter", string.Format("{0}({1})", FuncName, Overloads[overload]) );
 
 			return info;
 			//return base.CreateTooltipInformation(overload, currentParameter, smartWrap);
@@ -606,6 +606,7 @@ namespace LuaBinding
 
 			if(args == "")
 				return null;
+			args = args.Trim( "()".ToCharArray() );
 
 			return new LuaParameterDataProvider( name, args );
 			//return base.HandleParameterCompletion(completionContext, completionChar);
