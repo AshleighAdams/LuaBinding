@@ -174,8 +174,8 @@ namespace LuaBinding
 			"table\tsort\t(table [, comp])"
 		};
 
-		Regex rx_is_local = new Regex( @"^\s*local\s+((([A-z_][A-z0-9_]*))(\s*,\s*([A-z_][A-z0-9_]*))*)?\s*$", RegexOptions.Compiled );
-		Regex rx_locals   = new Regex( @"local\s+(([A-z_][A-z0-9_]*))(\s*,\s*([A-z_][A-z0-9_]*))*", RegexOptions.Compiled );
+		readonly Regex rx_is_local = new Regex( @"^\s*local\s+((([A-z_][A-z0-9_]*))(\s*,\s*([A-z_][A-z0-9_]*))*)?\s*$", RegexOptions.Compiled );
+		readonly Regex rx_locals   = new Regex( @"local\s+(([A-z_][A-z0-9_]*))(\s*,\s*([A-z_][A-z0-9_]*))*", RegexOptions.Compiled );
 
 		public override bool CanRunCompletionCommand()
 		{
@@ -202,6 +202,21 @@ namespace LuaBinding
 		{
 			if( !CanRunCompletionCommand() )
 				return null;
+
+			if( completionChar == '(' || completionChar == ')' ||
+				completionChar == '[' || completionChar == ']' ||
+				completionChar == '{' || completionChar == '}' ||
+				completionChar == '"' || completionChar == '\''||
+				completionChar == ';' || completionChar == '=' ||
+				completionChar == ' ' || completionChar == '\t'||
+				completionChar == ',' )
+			{
+				if( completionChar == '(' )
+				{
+					// TODO: Add function args
+				}
+				return null; // don't show it yet
+			}
 
 			CompletionDataList ret = new CompletionDataList();
 			string fullcontext = "";
@@ -269,14 +284,6 @@ namespace LuaBinding
 			else
 				fullcontext = fullcontext.TrimEnd(".".ToCharArray());
 
-			if( completionChar == '(' || completionChar == '[' ||
-				completionChar == ')' || completionChar == ']' ||
-			    completionChar == '"' || completionChar == '\''||
-				completionChar == ';' )
-			{
-				return null; // don't show it yet TODO: Add function args
-			}
-
 			foreach( string glob in Globals )
 			{
 				string[] split = glob.Split( "\t".ToCharArray() );
@@ -302,8 +309,7 @@ namespace LuaBinding
 						arg = "";
 					}
 
-					Console.WriteLine( split[ 1 ] );
-					var item = ret.Add( split[ 1 ] + arg, icon, "", split[1] );
+					ret.Add( split[ 1 ] + arg, icon, "", split[1] );
 				}
 			}
 
