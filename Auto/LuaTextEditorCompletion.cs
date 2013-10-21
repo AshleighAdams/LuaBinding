@@ -1,5 +1,6 @@
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using MonoDevelop.Ide.Gui.Content;
@@ -174,6 +175,29 @@ namespace LuaBinding
 			"table\tsort\t(table [, comp])"
 		};
 
+		string[] ProjectGlobals = new string[0];
+		DateTime? LastModified = null;
+
+		void UpdateProjectGlobals()
+		{
+			if( !this.document.HasProject )
+				return;
+
+			var proj = this.document.Project;
+			string path = proj.GetAbsoluteChildPath( ".project_globals" );
+
+			if( !File.Exists( path ) )
+				return;
+
+
+
+			if( LastModified == null || File.GetLastWriteTimeUtc( path ) > LastModified )
+			{
+				LastModified = File.GetLastWriteTimeUtc( path );
+				ProjectGlobals = File.ReadAllLines( path );
+			}
+		}
+
 		readonly Regex rx_is_local = new Regex( @"^\s*local\s+((([A-z_][A-z0-9_]*))(\s*,\s*([A-z_][A-z0-9_]*))*)?\s*$", RegexOptions.Compiled );
 		readonly Regex rx_locals   = new Regex( @"local\s+(([A-z_][A-z0-9_]*))(\s*,\s*([A-z_][A-z0-9_]*))*", RegexOptions.Compiled );
 
@@ -283,45 +307,57 @@ namespace LuaBinding
 			else
 			{
 				fullcontext = fullcontext.TrimEnd( ".".ToCharArray() );
-				if( fullcontext.StartsWith( "_G" ) )
-					fullcontext = fullcontext.Substring( "_G".Length );
+				if( fullcontext.StartsWith( "_G." ) )
+					fullcontext = fullcontext.Substring( "_G.".Length );
 			}
 
-			foreach( string glob in Globals )
+			Action<string> handle_line = delegate(string line)
 			{
-				string[] split = glob.Split( "\t".ToCharArray() );
+				if(line.Trim().StartsWith("#"))
+					return;
+				if(string.IsNullOrWhiteSpace(line))
+					return;
 
-				if( split[ 0 ] == fullcontext )
+				string[] split = line.Split( "\t".ToCharArray() );
+
+				string arg0 = split.Length >= 1 ? split[ 0 ] : ""; // namespace
+				string arg1 = split.Length >= 2 ? split[ 1 ] : ""; // name
+				string arg2 = split.Length >= 3 ? split[ 2 ] : ""; // arguments
+				string arg3 = split.Length >= 4 ? split[ 3 ] : ""; // future?
+
+				if( arg0 == fullcontext )
 				{
 					string icon = MonoDevelop.Ide.Gui.Stock.Method;
-					string arg = split.Length >= 3 ? split[ 2 ] : "";
+					string arg = arg2;
 
 					if( arg == "" ) // keyword
 					{
 						icon = "md-keyword";
 						arg = "";
 					}
-					else if( arg == "{}" )
+					else
+					if( arg == "{}" )
 					{
 						icon = MonoDevelop.Ide.Gui.Stock.NameSpace;
 						arg = "";
 					}
-					else if( arg == "#" )
+					else
+					if( arg == "#" )
 					{
 						icon = MonoDevelop.Ide.Gui.Stock.Literal;
 						arg = "";
 					}
 
-					ret.Add( split[ 1 ] + arg, icon, "", split[1] );
+					ret.Add( arg1 + arg, icon, "", arg1 );
 				}
-			}
+			};
 
-			/*
-			ret.Add( "table.insert" );
-			ret.Add( "table.remove" );
-			ret.Add( "print" );
-			ret.Add( "type" );
-			*/
+			this.UpdateProjectGlobals();
+
+			foreach( string glob in Globals )
+				handle_line( glob );
+			foreach( string glob in ProjectGlobals )
+				handle_line( glob );
 
 			return ret;
 			//return base.HandleCodeCompletion(completionContext, completionChar, ref triggerWordLength);
