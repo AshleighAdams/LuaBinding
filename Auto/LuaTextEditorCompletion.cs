@@ -3,14 +3,188 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Core;
 
+using ICSharpCode.NRefactory.Completion;
+
 namespace LuaBinding
 {
+
+	public class LuaParameterDataProvider : ParameterDataProvider
+	{
+		/// <summary>
+		/// Turn things like "message [, level]" into
+		/// message
+		/// message, level
+		/// </summary>
+		/// <param name="input">Input.</param>
+		public static List<string> Unpack(string input)
+		{
+			int depth = 0;
+			string required = "";
+			List<Tuple<int, List<string>>> optional = new List<Tuple<int, List<string>>>();
+
+			int i = 0;
+			while( i < input.Length )
+			{
+				char x = input[ i ];
+
+				if( x == '[' )
+				{
+					int start = i;
+					depth = 1;
+					i++;
+
+					while( i < input.Length && depth > 0 )
+					{
+						if( input[ i ] == '[' )
+							depth++;
+						if( input[ i ] == ']' )
+							depth--;
+						i++;
+					}
+					i--;
+
+					string child = input.Substring( start + 1, (i - (start + 1)) );
+					int pos = required.Length;
+					optional.Add( new Tuple<int, List<string>>( pos, Unpack(child) ) );
+				}
+				else
+					required += x;
+
+				i++;
+			}
+
+			List<string> ret = new List<string>();
+
+			if( optional.Count == 0 )
+			{
+				ret.Add( required );
+				return ret;
+			}
+
+			int[] argument = new int[optional.Count];
+			int[] argument_max = new int[optional.Count];
+
+			for( i = 0; i < argument.Length; i++ ) // Reset this one
+				argument[ i ] = 0;
+
+			for( i = 0; i < argument_max.Length; i++ )
+				argument_max[ i ] = optional[i].Item2.Count;
+
+			bool done = false;
+			while( !done )
+			{
+				string itt = required;
+				// Add an itteration
+				for( i = argument.Length; i-- > 0; ) // work backwards so the pointers are still fine
+					if( argument[ i ] != 0 )
+					{
+						int     pos = optional[ i ].Item1;
+						string  str = optional[ i ].Item2[ argument[ i ] - 1 ];
+						itt = itt.Insert( pos, str );
+					}
+
+				// The generated sequence is in itt now, but we need to clean it up a bit...
+				itt = itt.Trim( " \t,".ToCharArray() );
+				List<string> split = new List<string>( itt.Split( ",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries ) );
+
+				for( i = split.Count; i-- > 0; )
+					if( string.IsNullOrWhiteSpace( split[ i ] ) )
+						split.RemoveAt( i );
+
+				string comma = "";
+				itt = "";
+				foreach( string str in split )
+				{
+					itt += comma + str.Trim();
+					comma = ", ";
+				}
+
+				ret.Add( itt );
+
+				// Okay, now increase our base-mixed-numbery thing by one
+				argument[ 0 ]++;
+
+				for( i = 0; i < argument.Length; i++ )
+				{
+					if( argument[ i ] > argument_max[ i ] ) // carry
+					{
+						if( i + 1 >= argument.Length ) // no other place to carry
+						{
+							done = true;
+							break;
+						}
+						argument[ i ] = 0;
+						argument[ i + 1 ]++;
+					}
+				}
+			}
+
+			// add all the combinations of items
+
+			return ret;
+		}
+
+		public override int Count
+		{
+			get { return Overloads.Count; }
+		}
+
+		readonly List<string> Overloads = null;
+		readonly string FuncName;
+		public LuaParameterDataProvider(string funcname, string args) : base(1)
+		{
+			Overloads = Unpack( args );
+			FuncName = funcname;
+		}
+
+		public override bool AllowParameterList(int overload)
+		{
+			return overload < Count;
+		}
+
+		public override int GetParameterCount( int overload )
+		{
+			return Overloads[ overload ].Split( ",".ToCharArray() ).Length;
+		}
+
+		public override string GetParameterName( int overload, int currentParameter )
+		{
+			return Overloads[ overload ].Split( ",".ToCharArray() )[ currentParameter ].Trim();
+		}
+
+		string GetHeading( int overload, string[] parameterDescription, int currentParameter )
+		{
+			return "HEADING";
+		}
+
+		string GetDescription( int overload, int currentParameter )
+		{
+			return "DESCRIPT";
+		}
+
+		public override TooltipInformation CreateTooltipInformation(int overload, int currentParameter, bool smartWrap)
+		{
+			TooltipInformation info = new TooltipInformation();
+			info.AddCategory( "Parameter", string.Format("{0} {1}", FuncName, Overloads[overload]) );
+
+			return info;
+			//return base.CreateTooltipInformation(overload, currentParameter, smartWrap);
+		}
+	}
+
 	public class LuaTextEditorCompletion : CompletionTextEditorExtension
 	{
+		static bool ValidVarnameChar(char x)
+		{
+			return char.IsLetterOrDigit( x ) || x == '_';
+		}
+
 		string[] Globals = { // TODO: Fill this in
 			// Keywords
 			"_G\tand",
@@ -141,7 +315,7 @@ namespace LuaBinding
 			"os\ttmpname\t()",
 			// package libary
 			"_G\tpackage\t{}",
-			"_G\tmodule\tname [, ...]()",
+			"_G\tmodule\t(name [, ...])",
 			"_G\trequire\t(modname)",
 			"package\tcpath\t#",
 			"package\tloaded\t#",
@@ -199,7 +373,7 @@ namespace LuaBinding
 		}
 
 		readonly Regex rx_is_local = new Regex( @"^\s*local\s+((([A-z_][A-z0-9_]*))(\s*,\s*([A-z_][A-z0-9_]*))*)?\s*$", RegexOptions.Compiled );
-		readonly Regex rx_locals   = new Regex( @"local\s+(([A-z_][A-z0-9_]*))(\s*,\s*([A-z_][A-z0-9_]*))*", RegexOptions.Compiled );
+		//readonly Regex rx_locals   = new Regex( @"local\s+(([A-z_][A-z0-9_]*))(\s*,\s*([A-z_][A-z0-9_]*))*", RegexOptions.Compiled );
 
 		public override bool CanRunCompletionCommand()
 		{
@@ -216,6 +390,7 @@ namespace LuaBinding
 			}
 
 			{ // TODO: Are we in a string?
+
 			}
 
 			// in strings and stuff
@@ -257,7 +432,7 @@ namespace LuaBinding
 
 					pos--;
 					if( letter == '.' || letter == ':' || letter == ',' || 
-						!(char.IsLetterOrDigit( letter ) || letter == '_') )
+						!ValidVarnameChar(letter) )
 					{
 						if( letter == '.' || letter == ':' )
 							has_namespace = true;
@@ -290,7 +465,7 @@ namespace LuaBinding
 						did_namespace = true;
 						fullcontext = letter + fullcontext;
 					}
-					else if( char.IsLetterOrDigit( letter ) || letter == '_' )
+					else if( ValidVarnameChar(letter) )
 					{
 						did_namespace = false;
 						did_space = false;
@@ -323,7 +498,6 @@ namespace LuaBinding
 				string arg0 = split.Length >= 1 ? split[ 0 ] : ""; // namespace
 				string arg1 = split.Length >= 2 ? split[ 1 ] : ""; // name
 				string arg2 = split.Length >= 3 ? split[ 2 ] : ""; // arguments
-				string arg3 = split.Length >= 4 ? split[ 3 ] : ""; // future?
 
 				if( arg0 == fullcontext )
 				{
@@ -361,6 +535,80 @@ namespace LuaBinding
 
 			return ret;
 			//return base.HandleCodeCompletion(completionContext, completionChar, ref triggerWordLength);
+		}
+
+		public override ParameterDataProvider HandleParameterCompletion(CodeCompletionContext completionContext, char completionChar)
+		{
+			// attempt to get the function
+			int row = completionContext.TriggerLine;
+			int col = completionContext.TriggerLineOffset;
+			string line = this.Document.Editor.GetLineText( row );
+			line = line.Substring(0, Math.Min(col, line.Length));
+
+			if( !line.EndsWith( "(" ) )
+				return null;
+			line = line.Substring( 0, line.Length - 1 );
+
+			Console.WriteLine( "HandleParameterCompletion :{0}:{1}", completionContext.TriggerLine, line );
+
+
+			bool in_name = true;
+			string name = "", context = "";
+			for( int i = line.Length; i-- > 0; )
+			{
+				char x = line[ i ];
+
+				if( in_name )
+				{
+					if( x == '.' || x == ':' )
+						in_name = false;
+					else
+					if( !ValidVarnameChar( x ) )
+						break;
+					else
+						name = x + name;
+				}
+				else
+				{
+					if( x == '.' || x == ':' || ValidVarnameChar( x ) )
+						context = x + context;
+					else
+						break;
+				}
+			}
+
+			if( context == "" )
+				context = "_G";
+			string args = "";
+
+			Action<string> handle_line = delegate(string line2)
+			{
+				if(line2.Trim().StartsWith("#"))
+					return;
+				if(string.IsNullOrWhiteSpace(line2))
+					return;
+
+				string[] split = line2.Split( "\t".ToCharArray() );
+
+				string arg0 = split.Length >= 1 ? split[ 0 ] : ""; // namespace
+				string arg1 = split.Length >= 2 ? split[ 1 ] : ""; // name
+				string arg2 = split.Length >= 3 ? split[ 2 ] : ""; // arguments
+
+				if( arg0 == context && arg1 == name )
+					args = arg2;
+			};
+
+			this.UpdateProjectGlobals();
+			foreach( string glob in Globals )
+				handle_line(glob);
+			foreach( string glob in ProjectGlobals )
+				handle_line(glob);
+
+			if(args == "")
+				return null;
+
+			return new LuaParameterDataProvider( name, args );
+			//return base.HandleParameterCompletion(completionContext, completionChar);
 		}
 
 		public override ICompletionDataList CodeCompletionCommand(CodeCompletionContext completionContext)
