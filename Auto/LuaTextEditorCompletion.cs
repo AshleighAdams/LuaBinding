@@ -233,7 +233,7 @@ namespace LuaBinding
 
 					pos--;
 					if( letter == '.' || letter == ':' || letter == ',' || 
-						!char.IsLetterOrDigit( letter ) )
+						!(char.IsLetterOrDigit( letter ) || letter == '_') )
 					{
 						if( letter == '.' || letter == ':' )
 							has_namespace = true;
@@ -266,8 +266,7 @@ namespace LuaBinding
 						did_namespace = true;
 						fullcontext = letter + fullcontext;
 					}
-					else
-					if( char.IsLetterOrDigit( letter ) )
+					else if( char.IsLetterOrDigit( letter ) || letter == '_' )
 					{
 						did_namespace = false;
 						did_space = false;
@@ -282,7 +281,11 @@ namespace LuaBinding
 			if( fullcontext.Trim() == "" )
 				fullcontext = "_G";
 			else
-				fullcontext = fullcontext.TrimEnd(".".ToCharArray());
+			{
+				fullcontext = fullcontext.TrimEnd( ".".ToCharArray() );
+				if( fullcontext.StartsWith( "_G" ) )
+					fullcontext = fullcontext.Substring( "_G".Length );
+			}
 
 			foreach( string glob in Globals )
 			{
