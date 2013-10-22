@@ -5,7 +5,7 @@
 		url			= "https://github.com/c0bra61/LuaBinding"
 		description	= "Lua Language Binding"
 		category	= "Language bindings"
-		version		= "1.0.9">
+		version		= "1.0.10">
 	
 	<Runtime>
 		<Import assembly = "LuaBinding.dll" />

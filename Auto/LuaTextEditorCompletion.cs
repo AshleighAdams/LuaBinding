@@ -1,5 +1,6 @@
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -13,6 +14,32 @@ using ICSharpCode.NRefactory.Completion;
 
 namespace LuaBinding
 {
+	public class GlobalCompletionCategory : CompletionCategory
+	{
+		public GlobalCompletionCategory()
+		{
+			DisplayText = "Global";
+		}
+
+		public override int CompareTo(CompletionCategory other)
+		{
+			return (other.DisplayText == DisplayText) ? 1 : 0;
+		}
+	}
+
+	public class LocalCompletionCategory : CompletionCategory
+	{
+		public LocalCompletionCategory()
+		{
+			DisplayText = "Local";
+		}
+
+		public override int CompareTo(CompletionCategory other)
+		{
+			return (other.DisplayText == DisplayText) ? 1 : 0;
+		}
+	}
+
 
 	public class LuaParameterDataProvider : ParameterDataProvider
 	{
@@ -485,6 +512,7 @@ namespace LuaBinding
 					fullcontext = fullcontext.Substring( "_G.".Length );
 			}
 
+			CompletionCategory cat = null;
 			Action<string> handle_line = delegate(string line)
 			{
 				if(line.Trim().StartsWith("#"))
@@ -521,17 +549,24 @@ namespace LuaBinding
 						arg = "";
 					}
 
-					ret.Add( arg1 + arg, icon, "", arg1 );
+					var elm = ret.Add( arg1 + arg, icon, "", arg1 );
+					elm.CompletionCategory = cat;
 				}
 			};
 
 			this.UpdateProjectGlobals();
 
+			cat = new GlobalCompletionCategory();
+
 			foreach( string glob in Globals )
 				handle_line( glob );
 			foreach( string glob in ProjectGlobals )
 				handle_line( glob );
-			foreach(string glob in GetDocumentGlobals())
+
+			cat = new LocalCompletionCategory();
+			cat.DisplayText = "Locals";
+
+			foreach(string glob in GetDocumentLocals())
 				handle_line( glob );
 
 			return ret;
@@ -604,6 +639,8 @@ namespace LuaBinding
 				handle_line(glob);
 			foreach( string glob in ProjectGlobals )
 				handle_line(glob);
+			foreach( string glob in GetDocumentLocals() )
+				handle_line(glob);
 
 			if(args == "")
 				return null;
@@ -626,7 +663,7 @@ namespace LuaBinding
 		// file, tuple; tuple is start_line, end_line, functiontype
 		//Dictionary<string, List<Tuple<int, int, string>>> Cached; // this is so that syntax error we can still get the last successfull
 		                                                          // cached result
-		List<string> GetDocumentGlobals()
+		List<string> GetDocumentLocals()
 		{
 			var ret = new List<string>();
 
@@ -686,7 +723,7 @@ namespace LuaBinding
 				// TODO:
 			}
 
-			return ret;
+			return ret.Distinct().ToList();
 		}
 	}
 }
