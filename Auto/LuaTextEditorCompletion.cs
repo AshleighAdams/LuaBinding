@@ -171,7 +171,7 @@ namespace LuaBinding
 		public override TooltipInformation CreateTooltipInformation(int overload, int currentParameter, bool smartWrap)
 		{
 			TooltipInformation info = new TooltipInformation();
-			info.AddCategory( "Parameter", string.Format("{0}({1})", FuncName, Overloads[overload]) );
+			info.AddCategory( "Parameter", string.Format("{0}( {1} )", FuncName, Overloads[overload]) );
 
 			return info;
 			//return base.CreateTooltipInformation(overload, currentParameter, smartWrap);
@@ -218,7 +218,7 @@ namespace LuaBinding
 			"_G\tipairs(\t(table)",
 			"_G\tload\t(func [, chunkname])",
 			"_G\tloadfile\t([filename])",
-			"_G\tloadstring\t((string [, chunkname])",
+			"_G\tloadstring\t(string [, chunkname])",
 			"_G\tnext\t(table [, index])",
 			"_G\tpairs\t(table)",
 			"_G\tpcall\t(func, ...)",
@@ -233,7 +233,7 @@ namespace LuaBinding
 			"_G\ttype\t(value)",
 			"_G\tunpack\t(list [, i [, j]])",
 			"_G\txpcall\t(func, err)",
-			"_G\t_G\t#",
+			"_G\t_G\t{}",
 			"_G\t_VERSION\t#",
 			// coroutine libary
 			"_G\tcoroutine\t{}",
