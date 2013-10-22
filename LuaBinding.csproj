@@ -60,7 +60,6 @@
       <SpecificVersion>False</SpecificVersion>
       <Package>glib-sharp-2.0</Package>
     </Reference>
-    <Reference Include="Mono.Posix" />
     <Reference Include="MonoDevelop.Core, Version=2.6.0.0, Culture=neutral">
       <Package>monodevelop</Package>
       <Private>False</Private>
@@ -81,6 +80,7 @@
       <Package>monodevelop</Package>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

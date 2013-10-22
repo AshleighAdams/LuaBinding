@@ -373,7 +373,6 @@ namespace LuaBinding
 		}
 
 		readonly Regex rx_is_local = new Regex( @"^\s*local\s+((([A-z_][A-z0-9_]*))(\s*,\s*([A-z_][A-z0-9_]*))*)?\s*$", RegexOptions.Compiled );
-		//readonly Regex rx_locals   = new Regex( @"local\s+(([A-z_][A-z0-9_]*))(\s*,\s*([A-z_][A-z0-9_]*))*", RegexOptions.Compiled );
 
 		public override bool CanRunCompletionCommand()
 		{
@@ -532,6 +531,8 @@ namespace LuaBinding
 				handle_line( glob );
 			foreach( string glob in ProjectGlobals )
 				handle_line( glob );
+			foreach(string glob in GetDocumentGlobals())
+				handle_line( glob );
 
 			return ret;
 			//return base.HandleCodeCompletion(completionContext, completionChar, ref triggerWordLength);
@@ -618,6 +619,74 @@ namespace LuaBinding
 			return HandleCodeCompletion(completionContext, '\0', ref i);
 
 			//return base.CodeCompletionCommand(completionContext);
+		}
+
+		//readonly Regex rx_global_funcs = new Regex(@"\s+\d+\s+\[\d+\]\s+SETTABUP\s+[-\d]+\s+[-\d]+\s+[-\d]+\s+;\s+_ENV\s+""(?<name>.+)""", RegexOptions.Compiled);
+		readonly Regex rx_locals   = new Regex( @"(?<tabs>[ \t]*)local\s+((?<vars>([A-z_][A-z0-9_]*))(\s*,\s*([A-z_][A-z0-9_]*))*|function\s+(?<func_name>[A-z_][A-z0-9_]*)\s+\((?<func_args>.*)\))", RegexOptions.Compiled );
+		// file, tuple; tuple is start_line, end_line, functiontype
+		//Dictionary<string, List<Tuple<int, int, string>>> Cached; // this is so that syntax error we can still get the last successfull
+		                                                          // cached result
+		List<string> GetDocumentGlobals()
+		{
+			var ret = new List<string>();
+
+			// First, get the real globals
+			//this.document.FileName
+
+			// Then get the locals from our char pos, along with the indentation (use tabs, please :C)
+			// This is a hacky method that gets the indentation depth 
+			string text = this.Editor.GetTextBetween( 0, this.Editor.Caret.Offset );
+
+			// Get locals
+			{
+				MatchCollection collection = rx_locals.Matches( text );
+
+				Match[] col = new Match[collection.Count];
+				int i = 1;
+				foreach( Match match in collection )
+				{
+					col[ col.Length - i ] = match;
+					i++;
+				}
+
+				int depth = -1;
+				foreach( Match match in col )
+				{
+					// replace tab with 4 spaces, as this is *usually* right (few people use 2, 6 or 8 size tabs)
+					// TODO: Make this get the size from MonoDevelop
+					int tabs = match.Groups[ "tabs" ].Value.Replace( "\t", "    " ).Length;
+
+					// This bit of code just makes it so that "sub locals" arn't shown (it's hacky, i know)
+					// TODO: Update the locals to something more, conrete
+					if( depth == -1 || tabs < depth )
+						depth = tabs;
+					else
+					if( tabs > depth ) // nope.avi, we dropped lower than this before, try again
+					continue;
+
+					if( match.Groups[ "vars" ] != null )
+					{
+						string vars = match.Groups[ "vars" ].Value;
+						foreach( string name in vars.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries) )
+							ret.Add( string.Format( "_G\t{0}\t#", name.Trim() ) );
+					}
+					else
+					{
+						string func_name = match.Groups[ "func_name" ].Value;
+						string func_args = match.Groups[ "func_args" ].Value;
+
+						if( !string.IsNullOrWhiteSpace( func_name ) )
+							ret.Add( string.Format( "_G\t{0}\t({1})", func_name.Trim(), func_args.Trim() ) );
+					}
+				}
+			}
+
+			// global functions...
+			{
+				// TODO:
+			}
+
+			return ret;
 		}
 	}
 }
