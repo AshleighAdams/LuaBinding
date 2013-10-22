@@ -659,7 +659,7 @@ namespace LuaBinding
 		}
 
 		//readonly Regex rx_global_funcs = new Regex(@"\s+\d+\s+\[\d+\]\s+SETTABUP\s+[-\d]+\s+[-\d]+\s+[-\d]+\s+;\s+_ENV\s+""(?<name>.+)""", RegexOptions.Compiled);
-		readonly Regex rx_locals   = new Regex( @"(?<tabs>[ \t]*)local\s+((?<vars>([A-z_][A-z0-9_]*))(\s*,\s*([A-z_][A-z0-9_]*))*|function\s+(?<func_name>[A-z_][A-z0-9_]*)\s*\((?<func_args>.*)\))", RegexOptions.Compiled );
+		readonly Regex rx_locals   = new Regex( @"(?<tabs>[ \t]*)local\s+(function\s+(?<func_name>[A-z_][A-z0-9_]*)\s*\((?<func_args>.*)\)|(?<vars>([A-z_][A-z0-9_]*))(\s*,\s*([A-z_][A-z0-9_]*))*)", RegexOptions.Compiled );
 		// file, tuple; tuple is start_line, end_line, functiontype
 		//Dictionary<string, List<Tuple<int, int, string>>> Cached; // this is so that syntax error we can still get the last successfull
 		                                                          // cached result
@@ -701,7 +701,7 @@ namespace LuaBinding
 					if( tabs > depth ) // nope.avi, we dropped lower than this before, try again
 					continue;
 
-					if( match.Groups[ "vars" ] != null )
+					if( match.Groups[ "vars" ].Success )
 					{
 						string vars = match.Groups[ "vars" ].Value;
 						foreach( string name in vars.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries) )
