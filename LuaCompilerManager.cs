@@ -107,7 +107,7 @@ namespace LuaBinding
 			var envVars = configuration.EnvironmentVariables;
 			int exitCode = DoCompilation(outstr, working_dir, envVars, gacRoots, ref output, ref error, monitor);
 			
-			BuildResult result = ParseOutput(output, error);
+			BuildResult result = ParseOutput(output, error, project_items);
 			if (result.CompilerOutput.Trim().Length != 0)
 				monitor.Log.WriteLine(result.CompilerOutput);
 			
@@ -124,7 +124,7 @@ namespace LuaBinding
 			return result;
 		}
 		
-		static BuildResult ParseOutput (string stdout, string stderr)
+		static BuildResult ParseOutput (string stdout, string stderr, ProjectItemCollection project_items)
 		{
 			BuildResult result = new BuildResult ();
 			
@@ -148,7 +148,37 @@ namespace LuaBinding
 					BuildError error = CreateErrorFromString(curLine);
 					
 					if( error != null )
+					{
+						string path = error.FileName;
+						if( path.StartsWith( "..." ) ) // Fuck whomever made the choice to do this...
+						{
+							string known = path.Substring( 3 );
+							ProjectFile found = null;
+
+							foreach (ProjectFile finfo in project_items.GetAll<ProjectFile> ())
+							{
+								if (finfo.Subtype == Subtype.Directory)
+									continue;
+
+								switch (finfo.BuildAction) 
+								{
+								case "Compile":
+									if( finfo.Name.EndsWith( known ) )
+										found = finfo;
+									break;
+								default:
+									continue;
+								}
+								if( found != null )
+									break;
+							}
+
+							if( found != null )
+								error.FileName = found.Project.GetAbsoluteChildPath( found.FilePath );
+						}
+
 						result.Append( error );
+					}
 				}
 				sr.Close();
 			}
@@ -215,7 +245,7 @@ namespace LuaBinding
 			Match match = regex_error.Match(error_string);
 			if (!match.Success) 
 				return null;
-			
+
 			BuildError error = new BuildError ();
 			//error.FileName = match.Result ("${file}") ?? "";
 

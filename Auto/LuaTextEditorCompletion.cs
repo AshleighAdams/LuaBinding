@@ -399,26 +399,32 @@ namespace LuaBinding
 			}
 		}
 
-		readonly Regex rx_is_local = new Regex( @"^\s*local\s+((([A-z_][A-z0-9_]*))(\s*,\s*([A-z_][A-z0-9_]*))*)?\s*$", RegexOptions.Compiled );
-
+		readonly Regex rx_is_local     = new Regex( @"^\s*(local|for)\s+((([A-z_][A-z0-9_]*))(\s*,\s*([A-z_][A-z0-9_]*))*)?\s*$", RegexOptions.Compiled );
+		readonly Regex rx_is_function  = new Regex( @"^\s*(local\s+)?function(\s+([A-z0-9_\.]*))?\s*(\([A-z0-9_, ]*)?$", RegexOptions.Compiled );
+		readonly Regex rx_is_comment   = new Regex( @"^.*--.*$", RegexOptions.Compiled );
+		readonly Regex rx_in_string    = new Regex( @"(?<!\\)""", RegexOptions.Compiled );
 		public override bool CanRunCompletionCommand()
 		{
 			string line = this.Editor.GetLineText( this.Editor.Caret.Line );
+			string to_left = line.Substring( 0, Math.Min( this.Editor.Caret.Column, line.Length ) );
 
 			{ // Are we in a definition?
-				string to_left = line.Substring( 0, Math.Min( this.Editor.Caret.Column, line.Length ) );
-				if( rx_is_local.IsMatch( to_left ) )
+				if( rx_is_local.IsMatch( to_left ) || rx_is_function.IsMatch( to_left ) )
 					return false; // nope, we're defining a local variable
 			}
 
 			{ // Are we in a comment?
-				// TODO: this
+				if( rx_is_comment.IsMatch( to_left ) )
+					return false;
 			}
 
 			{ // TODO: Are we in a string?
-
+				MatchCollection col = rx_in_string.Matches( to_left );
+				if( col.Count % 2 == 1 ) // inside string
+					return false;
 			}
 
+			/*
 			{ // keyword?
 				int pos = this.Editor.Caret.Offset;
 				string word = "";
@@ -433,6 +439,7 @@ namespace LuaBinding
 				}
 				// TODO: this
 			}
+			*/
 
 			// in strings and stuff
 			return true; // base.CanRunCompletionCommand();
@@ -517,6 +524,9 @@ namespace LuaBinding
 					pos--;
 				}
 			}
+
+			if( completionChar == '.' && string.IsNullOrWhiteSpace( fullcontext.Trim( ".".ToCharArray() ) ) )
+				return null;
 
 			if( fullcontext.Trim() == "" )
 				fullcontext = "_G";
@@ -721,7 +731,8 @@ namespace LuaBinding
 		}
 
 		//readonly Regex rx_global_funcs = new Regex(@"\s+\d+\s+\[\d+\]\s+SETTABUP\s+[-\d]+\s+[-\d]+\s+[-\d]+\s+;\s+_ENV\s+""(?<name>.+)""", RegexOptions.Compiled);
-		readonly Regex rx_locals   = new Regex( @"(?<tabs>[ \t]*)local\s+(function\s+(?<func_name>[A-z_][A-z0-9_]*)\s*\((?<func_args>.*)\)|(?<vars>([A-z_][A-z0-9_]*))(\s*,\s*([A-z_][A-z0-9_]*))*)", RegexOptions.Compiled );
+		readonly Regex rx_locals         = new Regex( @"(?<tabs>[ \t]*)local\s+(function\s+(?<func_name>[A-z_][A-z0-9_]*)\s*\((?<func_args>.*)\)|(?<vars>([A-z_][A-z0-9_]*))(\s*,\s*([A-z_][A-z0-9_]*))*)", RegexOptions.Compiled );
+		readonly Regex rx_args_and_for   = new Regex( @"(?<tabs>[ \t]*)((local\s+)?function\s+([A-z][A-z0-9]+)?\((?<vars>.+)\)|for\s+(?<vars>.+)\s+(in\s+|=))", RegexOptions.Compiled);
 		// file, tuple; tuple is start_line, end_line, functiontype
 		//Dictionary<string, List<Tuple<int, int, string>>> Cached; // this is so that syntax error we can still get the last successfull
 		                                                          // cached result
@@ -777,6 +788,41 @@ namespace LuaBinding
 						if( !string.IsNullOrWhiteSpace( func_name ) )
 							ret.Add( string.Format( "_G\t{0}\t({1})", func_name.Trim(), func_args.Trim() ) );
 					}
+				}
+			}
+
+			// Get arguments
+			{
+				MatchCollection collection = rx_args_and_for.Matches( text );
+
+				Match[] col = new Match[collection.Count];
+				int i = 1;
+				foreach( Match match in collection )
+				{
+					col[ col.Length - i ] = match;
+					i++;
+				}
+
+				int depth = -1;
+				foreach( Match match in col )
+				{
+					// replace tab with 4 spaces, as this is *usually* right (few people use 2, 6 or 8 size tabs)
+					// TODO: Make this get the size from MonoDevelop
+					int tabs = match.Groups[ "tabs" ].Value.Replace( "\t", "    " ).Length + 4;
+
+					// This bit of code just makes it so that "sub locals" arn't shown (it's hacky, i know)
+					// TODO: Update the locals to something more, conrete
+					if( depth == -1 || tabs < depth )
+						depth = tabs;
+					else
+					if( tabs > depth ) // nope.avi, we dropped lower than this before, try again
+						continue;
+
+					string[] args = match.Groups[ "vars" ].Value.Split( ",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries );
+
+					if(args.Length > 0)
+						foreach(string arg in args)
+							ret.Add(string.Format("_G\t{0}\t#", arg));
 				}
 			}
 
