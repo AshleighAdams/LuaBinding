@@ -419,6 +419,21 @@ namespace LuaBinding
 
 			}
 
+			{ // keyword?
+				int pos = this.Editor.Caret.Offset;
+				string word = "";
+
+				while( pos > 1 )
+				{
+					char x = this.Editor.GetCharAt( pos );
+					if( !ValidVarnameChar( x ) )
+						break;
+					word = x + word;
+					pos--;
+				}
+				// TODO: this
+			}
+
 			// in strings and stuff
 			return true; // base.CanRunCompletionCommand();
 		}
@@ -573,19 +588,66 @@ namespace LuaBinding
 			//return base.HandleCodeCompletion(completionContext, completionChar, ref triggerWordLength);
 		}
 
+
+		bool wasnil = true;
+		public override void RunCompletionCommand()
+		{
+			wasnil = false; // allow ctrl+space to open the completion menu thingy
+			base.RunCompletionCommand();
+		}
+
 		public override ParameterDataProvider HandleParameterCompletion(CodeCompletionContext completionContext, char completionChar)
 		{
+			// they're just moving their cursor around the document
+			if( wasnil && completionChar == '\0' )
+				return null;
+
+			var ret = _HandleParameterCompletion( completionContext, completionChar );
+			wasnil = ret == null;
+			return ret;
+		}
+
+		private ParameterDataProvider _HandleParameterCompletion(CodeCompletionContext completionContext, char completionChar)
+		{
+
 			// attempt to get the function
 			int row = completionContext.TriggerLine;
 			int col = completionContext.TriggerLineOffset;
 			string line = this.Document.Editor.GetLineText( row );
 			line = line.Substring(0, Math.Min(col, line.Length));
 
-			if( !line.EndsWith( "(" ) )
-				return null;
-			line = line.Substring( 0, line.Length - 1 );
+			// Keep reading backwards until the last unclosed function
+			int pos = line.Length - 1;
+			int depth = 0;
+			bool _break_loop = false;
+			while( pos > 0 )
+			{
+				char x = line[ pos ];
 
-			Console.WriteLine( "HandleParameterCompletion :{0}:{1}", completionContext.TriggerLine, line );
+				switch( x )
+				{
+				case ')':
+					depth++;
+					break;
+				case '(':
+					depth--;
+					_break_loop = depth < 0;
+					break;
+				default:
+					break;
+				}
+
+				if( _break_loop )
+					break;
+
+				pos--;
+			}
+
+			if( pos <= 0 ) // negative, captin, not in a function
+				return null;
+			line = line.Substring( 0, pos );
+
+			//Console.WriteLine( "HandleParameterCompletion :{0}:{1}", completionContext.TriggerLine, line );
 
 
 			bool in_name = true;
