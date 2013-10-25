@@ -406,7 +406,7 @@ namespace LuaBinding
 		public override bool CanRunCompletionCommand()
 		{
 			string line = this.Editor.GetLineText( this.Editor.Caret.Line );
-			string to_left = line.Substring( 0, Math.Min( this.Editor.Caret.Column, line.Length ) );
+			string to_left = line.Substring( 0, Math.Min( this.Editor.Caret.Column - 1, line.Length ) );
 
 			{ // Are we in a definition?
 				if( rx_is_local.IsMatch( to_left ) || rx_is_function.IsMatch( to_left ) )
