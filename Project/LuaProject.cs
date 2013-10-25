@@ -63,7 +63,8 @@ namespace LuaBinding
 		protected override bool OnGetCanExecute( ExecutionContext context, ConfigurationSelector configuration )
 		{
 			// TODO: Check interpreter paths from here...
-			return true;
+			LuaConfiguration config = this.DefaultConfiguration as LuaConfiguration;
+			return !string.IsNullOrWhiteSpace( config.MainFile );
 		}
 
 		protected override BuildResult DoBuild(IProgressMonitor monitor, ConfigurationSelector configuration)

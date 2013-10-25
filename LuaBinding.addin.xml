@@ -5,7 +5,7 @@
 		url			= "https://github.com/c0bra61/LuaBinding"
 		description	= "Lua Language Binding"
 		category	= "Language bindings"
-		version		= "1.0.10">
+		version		= "1.0.11">
 	
 	<Runtime>
 		<Import assembly = "LuaBinding.dll" />
@@ -22,6 +22,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id = "LuaConsoleProject" resource = "LuaConsoleProject.xpt.xml"/>
+		<ProjectTemplate id = "LuaGmodAddon" resource = "LuaGmodAddon.xpt.xml"/>
 	</Extension>
 	<Extension path = "/MonoDevelop/Ide/FileFilters">
 		<FileFilter id = "Lua Files" _label = "Lua Files" extensions = "*.lua"/>

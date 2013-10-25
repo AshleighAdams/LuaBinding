@@ -104,6 +104,9 @@
       <LogicalName>LuaSyntaxMode.xml</LogicalName>
       <DeployService-Deploy>True</DeployService-Deploy>
     </EmbeddedResource>
+    <EmbeddedResource Include="LuaGmodAddon.xpt.xml">
+      <LogicalName>LuaGmodAddon.xpt.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -129,6 +132,7 @@
   <ItemGroup>
     <None Include="addin-project.xml" />
     <None Include=".gitignore" />
+    <None Include="garrysmod_definitions.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Syntax\" />
