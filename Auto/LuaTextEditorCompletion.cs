@@ -400,7 +400,7 @@ namespace LuaBinding
 		}
 
 		readonly Regex rx_is_local     = new Regex( @"^\s*(local|for)\s+((([A-z_][A-z0-9_]*))(\s*,\s*([A-z_][A-z0-9_]*))*)?\s*$", RegexOptions.Compiled );
-		readonly Regex rx_is_function  = new Regex( @"^\s*(local\s+)?function(\s+([A-z0-9_\.]*))?\s*(\([A-z0-9_, ]*)?$", RegexOptions.Compiled );
+		readonly Regex rx_is_function  = new Regex( @"^.*(local\s+)?function(\s+([A-z0-9_\.]*))?\s*(\([A-z0-9_, ]*)?$", RegexOptions.Compiled );
 		readonly Regex rx_is_comment   = new Regex( @"^.*--.*$", RegexOptions.Compiled );
 		readonly Regex rx_in_string    = new Regex( @"(?<!\\)""", RegexOptions.Compiled );
 		public override bool CanRunCompletionCommand()
