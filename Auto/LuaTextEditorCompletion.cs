@@ -846,7 +846,7 @@ namespace LuaBinding
 
 					if(args.Length > 0)
 						foreach(string arg in args)
-							ret.Add(string.Format("_G\t{0}\t#", arg));
+							ret.Add(string.Format("_G\t{0}\t#", arg.Trim()));
 				}
 			}
 
