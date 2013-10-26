@@ -163,11 +163,12 @@ namespace LuaBinding
 		}
 
 		readonly List<string> Overloads = null;
-		readonly string FuncName;
+		readonly string FuncName, FuncArgs;
 		public LuaParameterDataProvider(string funcname, string args) : base(1)
 		{
 			Overloads = Unpack( args );
 			FuncName = funcname;
+			FuncArgs = args;
 		}
 
 		public override bool AllowParameterList(int overload)
@@ -198,7 +199,24 @@ namespace LuaBinding
 		public override TooltipInformation CreateTooltipInformation(int overload, int currentParameter, bool smartWrap)
 		{
 			TooltipInformation info = new TooltipInformation();
-			info.AddCategory( "Parameter", string.Format("{0}( {1} )", FuncName, Overloads[overload]) );
+
+			string[] args = Overloads[ overload ].Split( ",".ToCharArray() );
+			string markup = "";
+			string comma = "";
+			int current = 1;
+			foreach( string arg in args )
+			{
+				if( current == currentParameter )
+					markup += string.Format("{0}<b><i>{1}</i></b>", comma, arg);
+				else
+					markup += string.Format("{0}{1}", comma, arg);;
+
+				comma = ", ";
+				current++;
+			}
+
+			info.SignatureMarkup = FuncName + "(" + FuncArgs + ")";
+			info.AddCategory( "Parameters", string.Format("{0}( {1} )", FuncName, markup) );
 
 			return info;
 			//return base.CreateTooltipInformation(overload, currentParameter, smartWrap);
@@ -403,6 +421,7 @@ namespace LuaBinding
 		readonly Regex rx_is_function  = new Regex( @"^.*(local\s+)?function(\s+([A-z0-9_\.]*))?\s*(\([A-z0-9_, ]*)?$", RegexOptions.Compiled );
 		readonly Regex rx_is_comment   = new Regex( @"^.*--.*$", RegexOptions.Compiled );
 		readonly Regex rx_in_string    = new Regex( @"(?<!\\)""", RegexOptions.Compiled );
+		readonly Regex rx_is_number    = new Regex( @"(?<![A-z_][0-9\.]*)[0-9\.]+$", RegexOptions.Compiled );
 		public override bool CanRunCompletionCommand()
 		{
 			string line = this.Editor.GetLineText( this.Editor.Caret.Line );
@@ -421,6 +440,11 @@ namespace LuaBinding
 			{ // TODO: Are we in a string?
 				MatchCollection col = rx_in_string.Matches( to_left );
 				if( col.Count % 2 == 1 ) // inside string
+					return false;
+			}
+
+			{ // Are we writing a number?
+				if( rx_is_number.IsMatch( to_left ) )
 					return false;
 			}
 
@@ -832,6 +856,65 @@ namespace LuaBinding
 			}
 
 			return ret.Distinct().ToList();
+		}
+
+		Regex rx_is_keyword = new Regex(@"(and|break|do|else|elseif|end|for|function|if|local|nil|not|or|repeat|return|then|until|while)$", RegexOptions.Compiled);
+		public override bool KeyPress(Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		{
+			// If we are a keyword
+			if( keyChar == ' ' && modifier == Gdk.ModifierType.None && this.CompletionWidget != null )
+			{
+				CompletionWindowManager.PreProcessKeyEvent( Gdk.Key.Tab, '\t', Gdk.ModifierType.None );
+				CompletionWindowManager.PostProcessKeyEvent( Gdk.Key.Tab, '\t', Gdk.ModifierType.None );
+				this.CompletionWidget.CurrentCodeCompletionContext.TriggerWordLength = 0;
+			}
+
+			bool ret = base.KeyPress(key, keyChar, modifier);
+
+			{ // did we type a keyword?
+				string line = Editor.GetLineText( Editor.Caret.Line );
+				string to_left = line.Substring( 0, Math.Min(line.Length, Editor.Caret.Column) );
+
+				if( rx_is_keyword.IsMatch( to_left ) )
+					CompletionWindowManager.HideWindow();
+			}
+
+			return ret;
+		}
+
+		public override int GetCurrentParameterIndex(int startOffset)
+		{
+			int pos = startOffset; //Editor.Caret.Offset; // startOffset;
+			int commas = 1;
+			int depth = 0;
+
+			while( pos > 1 )
+			{
+				char x = this.document.Editor.GetCharAt( pos );
+
+				switch( x )
+				{
+				case ')':
+					depth++;
+					break;
+				case '(':
+					depth--;
+					if( depth < 0 )
+						return commas + 1;
+					break;
+				case ',':
+					if(depth == 0)
+						commas++;
+					break;
+				default:
+					break;
+				}
+
+				pos--;
+			}
+
+			//return 1;
+			return base.GetCurrentParameterIndex(startOffset);
 		}
 	}
 }
