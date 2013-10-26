@@ -133,6 +133,7 @@
     <None Include="addin-project.xml" />
     <None Include=".gitignore" />
     <None Include="garrysmod_definitions.txt" />
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Syntax\" />

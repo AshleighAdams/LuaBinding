@@ -9,6 +9,10 @@ MonoDevelop Lua binding.
 ![enter image description here][5]
 ![enter image description here][6]
 
+Auto complete example:
+<video controls="" autoplay="" name="media">
+	<source src="http://files.xiatek.org/monodev_lua_gmod.webm" type="video/webm">
+</video>
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=TpXNTCWGV00
 " target="_blank"><img src="http://img.youtube.com/vi/TpXNTCWGV00/0.jpg" 
