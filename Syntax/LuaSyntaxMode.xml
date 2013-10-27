@@ -24,17 +24,17 @@
  THE SOFTWARE. -->
  
 <SyntaxMode name = "Lua" mimeTypes="text/x-lua">
-	<Property name="LineComment">--</Property>
 	<Property name="BlockCommentStart">--[[</Property>
 	<Property name="BlockCommentEnd">]]</Property>
+	<Property name="LineComment">--</Property>
 
-	<EolSpan color = "Comment(Line)" rule="Comment" tagColor="Comment(Line)">--</EolSpan>
-	
 	<Span color = "Comment(Block)" rule="Comment" tagColor="Comment(Line)">
 		<Begin>--[[</Begin>
 		<End>]]</End>
 	</Span>
-	
+
+	<EolSpan color = "Comment(Line)" rule="Comment" tagColor="Comment(Line)">--</EolSpan>
+		
 	<!-- Long comment -->
 	<Span color = "Comment(Block)" rule="Comment" tagColor="Comment(Line)">
 		<Begin>--[=[</Begin>
