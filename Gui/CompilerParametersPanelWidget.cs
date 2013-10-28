@@ -45,6 +45,7 @@ namespace LuaBinding
 			_VersionsStore.AppendValues( "Lua 5.1", LangVersion.Lua51 );
 			_VersionsStore.AppendValues( "Lua 5.2", LangVersion.Lua52 );
 			_VersionsStore.AppendValues( "LuaJIT", LangVersion.LuaJIT );
+			_VersionsStore.AppendValues( "Garry's Mod", LangVersion.GarrysMod );
 			LanguageVersion.Model = _VersionsStore;
 
 			Visible = true;
@@ -68,6 +69,8 @@ namespace LuaBinding
 					return LangVersion.Lua52;
 				case 3:
 					return LangVersion.LuaJIT;
+				case 4:
+					return LangVersion.GarrysMod;
 				}
 
 				return LangVersion.Lua; // fallback
@@ -87,6 +90,9 @@ namespace LuaBinding
 					break;
 				case LangVersion.LuaJIT:
 					LanguageVersion.Active = 3;
+					break;
+				case LangVersion.GarrysMod:
+					LanguageVersion.Active = 4;
 					break;
 				}
 			}

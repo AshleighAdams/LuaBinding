@@ -69,7 +69,15 @@ namespace LuaBinding
 
 		protected override BuildResult DoBuild(IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			return LuaCompilerManager.Compile(this.Items, this.DefaultConfiguration as LuaConfiguration, configuration, monitor);
+			LuaConfiguration config = this.DefaultConfiguration as LuaConfiguration;
+
+			if( config != null && config.LangVersion == LangVersion.GarrysMod )
+			{
+				monitor.ReportWarning( "Can't build a with Garry's Mod Lua syntax!" );
+				return new BuildResult( "Can't build a with Garry's Mod Lua syntax!", 0, 0 );
+			}
+
+			return LuaCompilerManager.Compile(this.Items, config, configuration, monitor);
 		}
 
 		protected override void DoExecute( IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration )

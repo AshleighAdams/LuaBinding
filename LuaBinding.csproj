@@ -107,6 +107,9 @@
     <EmbeddedResource Include="LuaGmodAddon.xpt.xml">
       <LogicalName>LuaGmodAddon.xpt.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Syntax\GarrysModLuaSyntaxMode.xml">
+      <LogicalName>GarrysModLuaSyntaxMode.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />

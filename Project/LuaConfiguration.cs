@@ -10,7 +10,8 @@ namespace LuaBinding
 		Lua,
 		Lua51,
 		Lua52,
-		LuaJIT
+		LuaJIT,
+		GarrysMod
 	}
 
 	public class LuaConfiguration : ProjectConfiguration

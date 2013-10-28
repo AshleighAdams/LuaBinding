@@ -6,6 +6,8 @@
   </configuration>
   <import>
     <widget-library name="MonoDevelop.Ide, Version=2.6.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.SourceEditor2, Version=2.6.0.0, Culture=neutral" />
+    <widget-library name="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
     <widget-library name="../build/LuaBinding.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="LuaBinding.CompilerParametersPanelWidget" design-size="299 83">
