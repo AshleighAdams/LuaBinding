@@ -5,14 +5,25 @@ namespace LuaBinding
 {
 	public static class LuaParser
 	{
-		public static string[] GetLocals(string lua, int position)
+		enum TokenType
 		{
-			// hacky, just parse backwards, through strings, and stuff, check for inside strings in here, in future
-			List<string> ret = new List<string>();
+			Comment,
+			Identifier,
+			Operator,
+			String,
+			Number
+		};
 
+		struct Token
+		{
+			//TokenType Type;
+			//int Start, End, Line;
+			//string Data;
+		};
 
-
-			return ret.ToArray();
+		static List<Token> GetTokens(string lua, bool gmodsyntax = false)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

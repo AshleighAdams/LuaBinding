@@ -34,6 +34,7 @@
 	</Span>
 
 	<EolSpan color = "Comment(Line)" rule="Comment" tagColor="Comment(Line)">--</EolSpan>
+	<EolSpan color = "Comment(Line)" rule="Shebang" tagColor="Comment(Line)">#!</EolSpan>
 		
 	<!-- Long comment -->
 	<Span color = "Comment(Block)" rule="Comment" tagColor="Comment(Line)">
@@ -170,6 +171,9 @@
 		<Word>__lt</Word>
 		<Word>__le</Word>
 	</Keywords>
+
+	<Rule name = "Shebang">
+	</Rule>
 
 	<Rule name = "Comment">
 		<Keywords color="Comment Tag" ignorecase="True">

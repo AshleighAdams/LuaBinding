@@ -417,11 +417,12 @@ namespace LuaBinding
 			}
 		}
 
-		readonly Regex rx_is_local     = new Regex( @"^\s*(local|for)\s+((([A-z_][A-z0-9_]*))(\s*,\s*([A-z_][A-z0-9_]*))*)?\s*$", RegexOptions.Compiled );
-		readonly Regex rx_is_function  = new Regex( @"^.*(local\s+)?function(\s+([A-z0-9_\.]*))?\s*(\([A-z0-9_, ]*)?$", RegexOptions.Compiled );
-		readonly Regex rx_is_comment   = new Regex( @"^.*--.*$", RegexOptions.Compiled );
-		readonly Regex rx_in_string    = new Regex( @"(?<!\\)""", RegexOptions.Compiled );
-		readonly Regex rx_is_number    = new Regex( @"(?<![A-z_][0-9\.]*)[0-9\.]+$", RegexOptions.Compiled );
+		readonly Regex rx_is_local          = new Regex( @"^\s*(local|for)\s+((([A-z_][A-z0-9_]*))(\s*,\s*([A-z_][A-z0-9_]*))*)?\s*$", RegexOptions.Compiled );
+		readonly Regex rx_is_function       = new Regex( @"^.*(local\s+)?function(\s+([A-z0-9_\.]*))?\s*(\([A-z0-9_, ]*)?$", RegexOptions.Compiled );
+		readonly Regex rx_is_comment        = new Regex( @"^.*--.*$", RegexOptions.Compiled ); // only checks single line comments for now, will properlly be introduced with a lexer
+		readonly Regex rx_is_comment_gmod   = new Regex( @"^.*(--|//).*$", RegexOptions.Compiled );
+		readonly Regex rx_in_string         = new Regex( @"(?<!\\)""", RegexOptions.Compiled );
+		readonly Regex rx_is_number         = new Regex( @"(?<![A-z_][0-9\.]*)[0-9\.]+$", RegexOptions.Compiled );
 		public override bool CanRunCompletionCommand()
 		{
 			string line = this.Editor.GetLineText( this.Editor.Caret.Line );
@@ -433,7 +434,12 @@ namespace LuaBinding
 			}
 
 			{ // Are we in a comment?
-				if( rx_is_comment.IsMatch( to_left ) )
+				LuaProject proj = (LuaProject)Document.Project;
+				LuaConfiguration config = null;
+				if( proj != null )
+					config = proj.DefaultConfiguration as LuaConfiguration;
+
+				if( ((config != null && config.LangVersion == LangVersion.GarrysMod) ? rx_is_comment_gmod : rx_is_comment).IsMatch( to_left ) )
 					return false;
 			}
 
